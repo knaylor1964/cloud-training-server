@@ -8,20 +8,19 @@ PORT = 8000
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
-        # Break the URL into path and query string
+        # Parse the URL path and query string
         parsed = urlparse(self.path)
 
         # /status endpoint
         if parsed.path == "/status":
+            data = {"ok": True, "message": "Server is working"}
             self.send_response(200)
             self.send_header("Content-type", "application/json")
             self.end_headers()
-
-            data = {"ok": True, "message": "Server is working"}
             self.wfile.write(json.dumps(data).encode("utf-8"))
 
         # /money endpoint: y = m*x + b
-                elif parsed.path == "/money":
+        elif parsed.path == "/money":
             # Parse query parameters: ?m=20&x=5&b=100
             qs = parse_qs(parsed.query)
 
@@ -38,7 +37,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             # y = m * x + b
             y = m * x + b
 
-            # Build result JSON
+            # Build result JSON including a human-readable message
             result = {
                 "m": m,
                 "x": x,

@@ -21,7 +21,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(data).encode("utf-8"))
 
         # /money endpoint: y = m*x + b
-        elif parsed.path == "/money":
+                elif parsed.path == "/money":
             # Parse query parameters: ?m=20&x=5&b=100
             qs = parse_qs(parsed.query)
 
@@ -35,9 +35,17 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             x = get_number("x", 0.0)
             b = get_number("b", 0.0)
 
+            # y = m * x + b
             y = m * x + b
 
-            result = {"m": m, "x": x, "b": b, "y": y}
+            # Build result JSON
+            result = {
+                "m": m,
+                "x": x,
+                "b": b,
+                "y": y,
+                "message": f"You will earn ${y:.2f} this week."
+            }
 
             self.send_response(200)
             self.send_header("Content-type", "application/json")

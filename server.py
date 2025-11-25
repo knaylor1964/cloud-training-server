@@ -20,7 +20,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(data).encode("utf-8"))
 
         # /money endpoint: y = m*x + b
-        elif parsed.path == "/money":
+                elif parsed.path == "/money":
             # Parse query parameters: ?m=20&x=5&b=100
             qs = parse_qs(parsed.query)
 
@@ -30,20 +30,28 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 except ValueError:
                     return default
 
-            m = get_number("m", 0.0)
-            x = get_number("x", 0.0)
-            b = get_number("b", 0.0)
+            m = get_number("m", 0.0)    # hourly wage
+            hours = get_number("x", 0.0)  # total hours worked
+            b = get_number("b", 0.0)    # bonus / tips
 
-            # y = m * x + b
-            y = m * x + b
+            # Overtime rules: time-and-a-half over 40 hours
+            regular_hours = min(hours, 40.0)
+            overtime_hours = max(hours - 40.0, 0.0)
 
-            # Build result JSON including a human-readable message
+            regular_pay = regular_hours * m
+            overtime_pay = overtime_hours * m * 1.5
+
+            gross = regular_pay + overtime_pay + b  # total before tax
+
             result = {
                 "m": m,
-                "x": x,
-                "b": b,
-                "y": y,
-                "message": f"You will earn ${y:.2f} this week."
+                "hours": hours,
+                "bonus": b,
+                "regular_hours": regular_hours,
+                "overtime_hours": overtime_hours,
+                "regular_pay": regular_pay,
+                "overtime_pay": overtime_pay,
+                "y": gross,  # total weekly gross
             }
 
             self.send_response(200)

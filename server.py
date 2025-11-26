@@ -20,7 +20,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(data).encode("utf-8"))
 
         # /money endpoint: y = m*x + b
-                elif parsed.path == "/money":
+        elif parsed.path == "/money":
             # Parse query parameters: ?m=20&x=5&b=100
             qs = parse_qs(parsed.query)
 
@@ -51,7 +51,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 "overtime_hours": overtime_hours,
                 "regular_pay": regular_pay,
                 "overtime_pay": overtime_pay,
-                "y": gross,  # total weekly gross
+                "y": gross  # total weekly gross
             }
 
             self.send_response(200)

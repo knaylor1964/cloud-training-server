@@ -8,7 +8,7 @@ PORT = 8000
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
-        # Parse the URL path and query string
+        # Break the URL into path and query string
         parsed = urlparse(self.path)
 
         # /status endpoint
@@ -19,7 +19,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(data).encode("utf-8"))
 
-        # /money endpoint: y = m*x + b
+        # /money endpoint with overtime rules
         elif parsed.path == "/money":
             # Parse query parameters: ?m=20&x=5&b=100
             qs = parse_qs(parsed.query)
@@ -27,12 +27,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             def get_number(name, default=0.0):
                 try:
                     return float(qs.get(name, [default])[0])
-                except ValueError:
+                except (ValueError, TypeError):
                     return default
 
-            m = get_number("m", 0.0)    # hourly wage
+            # Inputs
+            m = get_number("m", 0.0)      # hourly wage
             hours = get_number("x", 0.0)  # total hours worked
-            b = get_number("b", 0.0)    # bonus / tips
+            b = get_number("b", 0.0)      # bonus / tips
 
             # Overtime rules: time-and-a-half over 40 hours
             regular_hours = min(hours, 40.0)

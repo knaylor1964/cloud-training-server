@@ -20,7 +20,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(data).encode("utf-8"))
 
         # /money endpoint: y = m*x + b
-                elif parsed.path == "/money":
+            elif parsed.path == "/money":
             # Parse query parameters: ?m=20&x=5&b=100
             qs = parse_qs(parsed.query)
 
